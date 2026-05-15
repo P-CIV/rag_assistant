@@ -1,6 +1,6 @@
 # Assistant RAG de Recommandation de Services
 
-Un assistant intelligent qui trouve et recommande des services à partir de vos catalogues, en comprenant les questions en langage naturel.
+Un assistant qui trouve et recommande des services à partir de vos catalogues, en comprenant les questions en langage naturel.
 
 ## Démarrage rapide
 
