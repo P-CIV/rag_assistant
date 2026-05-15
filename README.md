@@ -26,8 +26,8 @@ OPENAI_API_KEY=votre_cle_chat
 OPENAI_API_ENDPOINT=https://votre-ressource.openai.azure.com/
 OPENAI_EMBEDDING_API_KEY=votre_cle_embedding
 OPENAI_EMBEDDING_API_ENDPOINT=https://votre-ressource-embedding.openai.azure.com/
-AZURE_CHAT_DEPLOYMENT=gpt-4o
-AZURE_EMBEDDING_DEPLOYMENT=text-embedding-3-small
+AZURE_CHAT_DEPLOYMENT=gpt-4.1-mini
+AZURE_EMBEDDING_DEPLOYMENT=text-embedding-......
 ```
 
 ## Structure du projet
