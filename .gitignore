@@ -2,8 +2,12 @@
 __pycache__/
 *.pyc
 vector_db/
-data/raw/
-data/processed/
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/processed/chunks/*
+!data/processed/chunks/.gitkeep
 .DS_Store
 *.egg-info/
 dist/
