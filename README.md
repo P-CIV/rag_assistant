@@ -2,7 +2,7 @@
 
 Un assistant intelligent qui trouve et recommande des services à partir de vos catalogues, en comprenant les questions en langage naturel.
 
-## ⚡ Démarrage rapide
+## Démarrage rapide
 
 ```bash
 # 1. Installer les dépendances
@@ -26,11 +26,11 @@ OPENAI_API_KEY=votre_cle_chat
 OPENAI_API_ENDPOINT=https://votre-ressource.openai.azure.com/
 OPENAI_EMBEDDING_API_KEY=votre_cle_embedding
 OPENAI_EMBEDDING_API_ENDPOINT=https://votre-ressource-embedding.openai.azure.com/
-AZURE_CHAT_DEPLOYMENT=gpt-4o
-AZURE_EMBEDDING_DEPLOYMENT=text-embedding-3-small
+AZURE_CHAT_DEPLOYMENT=gpt-4.1-mini
+AZURE_EMBEDDING_DEPLOYMENT=text-embedding-......
 ```
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 RAG_ASSISTANT/
@@ -86,7 +86,7 @@ Voir [scenarios/test_cases.csv](scenarios/test_cases.csv) pour les tests disponi
 5. **Génération** → GPT génère une recommandation basée sur les documents trouvés
 6. **Mémoire** → L'assistant se souvient des 10 derniers échanges
 
-## ⚙️ Comportement de l'assistant
+## Comportement de l'assistant
 
 - Recommande **1 à 2 services** par réponse
 - Retient l'**historique** de la conversation (10 échanges)
