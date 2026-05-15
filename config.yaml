@@ -1,0 +1,26 @@
+projet:
+  nom: "Assistant de Recommandation RAG"
+  langue: "fr"
+
+ingestion:
+  taille_chunk: 1000
+  chevauchement_chunk: 100
+  formats_acceptes:
+    - ".txt"
+    - ".pdf"
+
+retrieval:
+  nombre_documents: 4
+  seuil_similarite: 0.3
+
+generation:
+  max_recommandations: 2
+  temperature: 0.7
+
+historique:
+  max_echanges: 10
+
+chemins:
+  donnees_brutes: "data/raw"
+  base_vecteurs: "vector_db"
+  prompt: "prompts/rag_prompt.txt"
