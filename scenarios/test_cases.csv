@@ -1,0 +1,8 @@
+question,reponse_attendue_type,hors_catalogue
+"Je cherche une connexion internet pour regarder des films en 4K",recommandation,non
+"Quel forfait pour une petite entreprise ?",recommandation,non
+"J'ai un petit budget, quel forfait mobile ?",recommandation,non
+"Quelle est la capitale de la France ?",refus_poli,oui
+"Parle-moi de la météo aujourd'hui",refus_poli,oui
+"Je veux internet et du mobile, qu'est-ce que vous proposez ?",recommandation,non
+"Le dernier forfait que tu m'as suggéré, c'est combien ?",suivi_historique,non
