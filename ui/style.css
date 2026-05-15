@@ -1,0 +1,316 @@
+/* =========================================================
+   KOVA IA — PREMIUM AI UI (VIBRANT FINAL VERSION)
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =========================================================
+   ROOT VARIABLES
+========================================================= */
+
+:root {
+
+    --bg-primary: #06070c;
+    --bg-secondary: #0b0f1c;
+
+    --text-primary: #f5f7ff;
+    --text-muted: #8a90a6;
+
+    --accent-primary: #8aa0ff;
+    --accent-secondary: #6f8cff;
+
+    --assistant-bubble: rgba(17, 19, 30, 0.92);
+
+    --user-gradient:
+        linear-gradient(
+            135deg,
+            rgba(138,160,255,0.35),
+            rgba(0,212,255,0.10)
+        );
+}
+
+/* =========================================================
+   GLOBAL BACKGROUND (FIX WHITE BOTTOM STREAMLIT)
+========================================================= */
+
+html,
+body,
+[data-testid="stAppViewContainer"],
+.stApp {
+
+    background:
+        radial-gradient(circle at 15% 10%, rgba(124,150,255,0.18), transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(0,212,255,0.12), transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(111,140,255,0.10), transparent 50%),
+
+        linear-gradient(
+            180deg,
+            #05060a 0%,
+            #070a12 40%,
+            #0a0f1c 70%,
+            #05060a 100%
+        ) !important;
+
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+
+    overflow-x: hidden;
+}
+
+/* HARD FIX STREAMLIT WHITE GAP */
+[data-testid="stAppViewContainer"] > div,
+main,
+.block-container {
+
+    background: transparent !important;
+    padding-bottom: 0 !important;
+}
+
+/* REMOVE STREAMLIT DEFAULT UI */
+#MainMenu,
+footer,
+header {
+
+    display: none !important;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.fixed-header {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 115px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(10,10,18,0.72);
+
+    backdrop-filter: blur(22px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+
+    z-index: 999;
+}
+
+/* =========================================================
+   CHAT CONTAINER
+========================================================= */
+
+[data-testid="stChatMessage"] {
+
+    background: transparent !important;
+
+    border: none !important;
+
+    margin-bottom: 1.6rem !important;
+
+    display: flex !important;
+}
+
+/* USER RIGHT */
+[data-testid="stChatMessage"]:has([aria-label="Chat message from user"]) {
+    flex-direction: row-reverse !important;
+}
+
+/* ASSISTANT LEFT */
+[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"]) {
+    flex-direction: row !important;
+}
+
+/* =========================================================
+   BUBBLES
+========================================================= */
+
+[data-testid="stChatMessageContent"] {
+
+    padding: 16px 20px !important;
+
+    border-radius: 22px !important;
+
+    max-width: 76% !important;
+
+    font-size: 15px;
+
+    line-height: 1.75;
+
+    backdrop-filter: blur(20px);
+
+    position: relative;
+
+    transition: 0.2s ease;
+}
+
+/* USER BUBBLE */
+[data-testid="stChatMessage"]:has([aria-label="Chat message from user"])
+[data-testid="stChatMessageContent"] {
+
+    background: var(--user-gradient) !important;
+
+    border: 1px solid rgba(138,160,255,0.18);
+
+    color: white !important;
+
+    border-bottom-right-radius: 6px !important;
+}
+
+/* ASSISTANT BUBBLE */
+[data-testid="stChatMessage"]:has([aria-label="Chat message from assistant"])
+[data-testid="stChatMessageContent"] {
+
+    background: var(--assistant-bubble) !important;
+
+    border: 1px solid rgba(255,255,255,0.06);
+
+    color: var(--text-primary) !important;
+
+    border-bottom-left-radius: 6px !important;
+}
+
+/* =========================================================
+   INPUT FIX — FULL DARK (NO WHITE BACKGROUND)
+========================================================= */
+
+[data-testid="stChatInput"] {
+
+    position: fixed !important;
+
+    bottom: 26px !important;
+
+    left: 50% !important;
+
+    transform: translateX(-50%) !important;
+
+    width: 92% !important;
+
+    max-width: 860px !important;
+
+    z-index: 1000 !important;
+
+    background: transparent !important;
+}
+
+/* INPUT CONTAINER */
+[data-testid="stChatInput"] > div {
+
+    background: rgba(12, 14, 22, 0.95) !important;
+
+    backdrop-filter: blur(26px);
+
+    border-radius: 28px !important;
+
+    border: 1px solid rgba(138,160,255,0.12) !important;
+
+    box-shadow:
+        0 14px 45px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(138,160,255,0.06);
+
+    padding: 10px 12px !important;
+}
+
+/* 🔥 FORCE NO WHITE STREAMLIT LAYERS */
+[data-testid="stChatInput"] div,
+[data-testid="stChatInput"] section,
+[data-testid="stChatInput"] form {
+
+    background: transparent !important;
+}
+
+/* TEXTAREA */
+[data-testid="stChatInput"] textarea {
+
+    background: transparent !important;
+
+    color: var(--text-primary) !important;
+
+    border: none !important;
+
+    outline: none !important;
+
+    box-shadow: none !important;
+
+    caret-color: var(--accent-primary);
+
+    font-size: 15px !important;
+
+    line-height: 1.6 !important;
+}
+
+/* PLACEHOLDER */
+[data-testid="stChatInput"] textarea::placeholder {
+
+    color: rgba(138, 144, 166, 0.75) !important;
+}
+
+/* FOCUS */
+[data-testid="stChatInput"] > div:focus-within {
+
+    border: 1px solid rgba(138,160,255,0.28) !important;
+
+    box-shadow:
+        0 0 0 4px rgba(138,160,255,0.10),
+        0 18px 50px rgba(0,0,0,0.55);
+}
+
+/* GLOBAL CLEAN */
+[data-testid="stChatInput"] * {
+
+    background-color: transparent !important;
+}
+
+/* =========================================================
+   SEND BUTTON
+========================================================= */
+
+[data-testid="stChatInputSubmitButton"] {
+
+    background: linear-gradient(135deg, #8aa0ff, #6f8cff) !important;
+
+    border-radius: 14px !important;
+
+    box-shadow: 0 8px 20px rgba(111,140,255,0.28);
+
+    transition: 0.15s ease;
+}
+
+[data-testid="stChatInputSubmitButton"]:hover {
+
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes fadeUp {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
