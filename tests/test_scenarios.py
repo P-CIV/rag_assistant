@@ -13,14 +13,10 @@ load_dotenv()
 
 
 def executer_tests(fichier_scenarios: str = "scenarios/test_cases.csv"):
-    """Charge la base et joue chaque cas de test du fichier CSV.
-
-    B1 — Correction : utilise repondre() qui orchestre la pipeline complète
-    (premiere_passe + recuperer_documents + deuxieme_passe) avec la bonne
-    signature, plutôt que generer_reponse() (inexistante) et
-    recuperer_documents(question, historique, base) (mauvaise signature).
     """
-    print("Initialisation de la base vectorielle pour les tests...")
+    # Charge la base et exécute les tests CSV avec repondre(), qui gère correctement toute la pipeline RAG.
+    """
+    print("Initialisation de la base vectorielle pour les tests")
 
     with open(fichier_scenarios, newline="", encoding="utf-8") as f:
         lecteur = csv.DictReader(f)
