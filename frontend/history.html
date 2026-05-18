@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA — Historique</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="formes-decoratives">
+        <div class="forme"></div>
+        <div class="forme"></div>
+        <div class="forme"></div>
+        <div class="forme"></div>
+    </div>
+
+    <!-- Modal de détail -->
+    <div id="modal-overlay" class="modal-overlay cachee">
+        <div class="modal-carte">
+            <div class="modal-entete">
+                <h3 id="modal-question"></h3>
+                <button id="modal-fermer" class="modal-fermer-btn" title="Fermer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-corps">
+                <div class="modal-label"><i class="fas fa-user"></i> Vous</div>
+                <div id="modal-texte-question" class="modal-bulle modal-bulle-utilisateur"></div>
+                <div class="modal-label"><i class="fas fa-robot"></i> KOVA</div>
+                <div id="modal-texte-reponse" class="modal-bulle modal-bulle-bot"></div>
+            </div>
+            <div class="modal-pied">
+                <span id="modal-date" class="modal-date-texte"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="header">
+            <div class="header-gauche">
+                <i class="fas fa-history header-icone"></i>
+                <div>
+                    <h1>Historique</h1>
+                    <p id="compteur-conversations" class="sous-titre-header">Chargement…</p>
+                </div>
+            </div>
+            <div class="actions">
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour au chat
+                </a>
+                <button class="btn btn-danger" id="supprimerToutBtn">
+                    <i class="fas fa-trash"></i>
+                    Tout supprimer
+                </button>
+            </div>
+        </div>
+
+        <!-- Barre de recherche -->
+        <div class="barre-recherche">
+            <i class="fas fa-search icone-recherche"></i>
+            <input type="text" id="champ-recherche" placeholder="Rechercher dans l'historique…" />
+        </div>
+
+        <!-- Liste -->
+        <div id="listeConversations" class="chat-list"></div>
+
+        <!-- État vide -->
+        <div id="etat-vide" class="etat-vide cachee">
+            <i class="fas fa-comment-slash etat-vide-icone"></i>
+            <p>Aucune conversation trouvée</p>
+            <span>Vos échanges avec KOVA apparaîtront ici</span>
+        </div>
+
+    </div>
+
+    <script>
+        const CLE_HISTORIQUE = "kova_historique";
+
+        // --- Utilitaires ---
+
+        function chargerHistorique() {
+            return JSON.parse(localStorage.getItem(CLE_HISTORIQUE) || "[]");
+        }
+
+        function sauvegarderHistorique(data) {
+            localStorage.setItem(CLE_HISTORIQUE, JSON.stringify(data));
+        }
+
+        function formaterDate(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString("fr-FR", {
+                day: "2-digit", month: "long", year: "numeric"
+            }) + " à " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+        }
+
+        function extraireTexte(texte) {
+            return texte.replace(/\*\*(.+?)\*\*/g, "$1").replace(/\*(.+?)\*/g, "$1").trim();
+        }
+
+        function truncate(texte, max = 120) {
+            const propre = extraireTexte(texte);
+            return propre.length > max ? propre.slice(0, max) + "…" : propre;
+        }
+
+        // --- Rendu ---
+
+        function mettreAJourCompteur(n) {
+            const el = document.getElementById("compteur-conversations");
+            el.textContent = n === 0 ? "Aucune conversation" : `${n} conversation${n > 1 ? "s" : ""}`;
+        }
+
+        function afficherListe(items) {
+            const liste   = document.getElementById("listeConversations");
+            const vide    = document.getElementById("etat-vide");
+            liste.innerHTML = "";
+
+            if (items.length === 0) {
+                vide.classList.remove("cachee");
+                return;
+            }
+
+            vide.classList.add("cachee");
+
+            items.forEach((item, index) => {
+                const historique = chargerHistorique();
+                const vraiIndex  = historique.findIndex(h => h.date === item.date);
+
+                const carte = document.createElement("div");
+                carte.className = "conversation-card";
+                carte.innerHTML = `
+                    <div class="conversation-title">
+                        <i class="fas fa-comment-dots titre-icone"></i>
+                        ${truncate(item.question, 60)}
+                    </div>
+                    <div class="conversation-preview">${truncate(item.reponse)}</div>
+                    <div class="conversation-footer">
+                        <span class="conversation-date">
+                            <i class="fas fa-clock"></i> ${formaterDate(item.date)}
+                        </span>
+                        <div class="conversation-actions">
+                            <button class="action-btn view" title="Voir la conversation" data-index="${vraiIndex}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn delete" title="Supprimer" data-index="${vraiIndex}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                carte.querySelector(".action-btn.view").addEventListener("click", () => {
+                    ouvrirModal(item);
+                });
+
+                carte.querySelector(".action-btn.delete").addEventListener("click", () => {
+                    supprimerUn(vraiIndex);
+                });
+
+                liste.appendChild(carte);
+            });
+        }
+
+        function rendrePage() {
+            const historique = chargerHistorique().reverse();
+            mettreAJourCompteur(historique.length);
+            afficherListe(historique);
+        }
+
+        // --- Suppression ---
+
+        function supprimerUn(index) {
+            const historique = chargerHistorique();
+            historique.splice(index, 1);
+            sauvegarderHistorique(historique);
+            filtrer();
+        }
+
+        document.getElementById("supprimerToutBtn").addEventListener("click", () => {
+            if (!chargerHistorique().length) return;
+            if (confirm("Supprimer toutes les conversations ?")) {
+                localStorage.removeItem(CLE_HISTORIQUE);
+                rendrePage();
+            }
+        });
+
+        // --- Recherche ---
+
+        document.getElementById("champ-recherche").addEventListener("input", filtrer);
+
+        function filtrer() {
+            const q          = document.getElementById("champ-recherche").value.toLowerCase().trim();
+            const historique = chargerHistorique().reverse();
+            const resultats  = q
+                ? historique.filter(h =>
+                    h.question.toLowerCase().includes(q) ||
+                    h.reponse.toLowerCase().includes(q))
+                : historique;
+
+            mettreAJourCompteur(historique.length);
+            afficherListe(resultats);
+        }
+
+        // --- Modal ---
+
+        function ouvrirModal(item) {
+            document.getElementById("modal-question").textContent    = truncate(item.question, 70);
+            document.getElementById("modal-texte-question").textContent = item.question;
+            document.getElementById("modal-texte-reponse").textContent  = extraireTexte(item.reponse);
+            document.getElementById("modal-date").textContent           = formaterDate(item.date);
+            document.getElementById("modal-overlay").classList.remove("cachee");
+            document.body.style.overflow = "hidden";
+        }
+
+        function fermerModal() {
+            document.getElementById("modal-overlay").classList.add("cachee");
+            document.body.style.overflow = "";
+        }
+
+        document.getElementById("modal-fermer").addEventListener("click", fermerModal);
+        document.getElementById("modal-overlay").addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) fermerModal();
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") fermerModal();
+        });
+
+        // --- Init ---
+        rendrePage();
+    </script>
+
+</body>
+</html>

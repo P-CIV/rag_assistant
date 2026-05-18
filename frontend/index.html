@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KOVA</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome hébergé en self-hosted évite le warning "Tracking Prevention" -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <style>
+        /* ── Barre de statut serveur ── */
+        .barre-statut {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            border-radius: 0 0 8px 8px;
+            transition: opacity .3s, max-height .3s;
+            max-height: 40px;
+            overflow: hidden;
+        }
+        .barre-statut--cachee  { max-height: 0; padding: 0; opacity: 0; pointer-events: none; }
+        .barre-statut--attente { background: #fff8e1; color: #856404; }
+        .barre-statut--succes  { background: #e8f5e9; color: #2e7d32; }
+        .barre-statut--erreur  { background: #fdecea; color: #b71c1c; }
+        .barre-statut i        { font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+    <div class="formes-decoratives">
+        <div class="forme"></div>
+        <div class="forme"></div>
+        <div class="forme"></div>
+        <div class="forme"></div>
+    </div>
+
+    <div class="conteneur-chat">
+
+        <div class="entete-chat">
+            <div class="info-bot">
+                <div class="avatar-bot">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="statut-bot">
+                    <h2>KOVA</h2>
+                    <span class="point-statut"></span>
+                    <span class="texte-statut">En ligne</span>
+                </div>
+            </div>
+            <a href="history.html" class="btn-historique" title="Voir l'historique">
+                <i class="fas fa-history"></i>
+            </a>
+        </div>
+
+        <!-- Barre de statut serveur  -->
+        <div id="barre-statut" class="barre-statut barre-statut--cachee">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <span id="texte-statut-serveur"></span>
+        </div>
+
+        <div id="messages-chat" class="messages-chat">
+            <div class="message message-bot">
+                <div class="contenu-message">
+                    <p class="intro-p">Bonjour ! Je suis <strong>KOVA</strong>, votre assistant. Comment puis-je vous aider aujourd'hui ?</p>
+                </div>
+                <div class="heure-message" id="heure-accueil"></div>
+            </div>
+        </div>
+
+        <div class="zone-saisie">
+            <div class="conteneur-saisie">
+                <input
+                    type="text"
+                    id="champ-utilisateur"
+                    placeholder="Écrivez votre message…"
+                    autocomplete="off"
+                />
+                <button id="bouton-envoyer" title="Envoyer">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById("heure-accueil").textContent =
+            new Date().getHours() + ":" + String(new Date().getMinutes()).padStart(2, "0");
+    </script>
+
+</body>
+</html>
