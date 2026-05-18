@@ -57,8 +57,11 @@ MAX_MESSAGE_CHARS = 2000
 RATE_LIMIT_CHAT = "10/minute"
 RATE_LIMIT_SESSION = "20/minute"
 
-# FIX 5 — ThreadPoolExecutor dédié pour appels RAG synchrones
-_executor = ThreadPoolExecutor(max_workers=4)
+# Timeout RAG — augmenté pour couvrir le cold start Render Free (~30-60 s)
+RAG_TIMEOUT_SECONDES = 180.0
+
+# ThreadPoolExecutor limité à 2 workers (contrainte RAM Render Free 512 MB)
+_executor = ThreadPoolExecutor(max_workers=2)
 
 # Configurer les origines CORS autorisées
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "")
@@ -129,7 +132,7 @@ def nettoyer_sessions_expirées() -> None:
         logger.info(f"{len(ids_expirés)} session(s) expirée(s) supprimée(s)")
 
 
-# FIX 3 — Middleware de nettoyage périodique (1 requête sur 50)
+# Middleware de nettoyage périodique (1 requête sur 50)
 @app.middleware("http")
 async def nettoyage_periodique(request: Request, call_next):
     """Déclenche le nettoyage des sessions expirées de façon aléatoire."""
@@ -138,17 +141,35 @@ async def nettoyage_periodique(request: Request, call_next):
     return await call_next(request)
 
 
-# FIX 5 — Wrapper async avec timeout pour appels RAG bloquants
+# Wrapper async pour appels RAG bloquants avec timeout
 async def appeler_rag(question: str, historique: list) -> dict:
-    """Exécute repondre() dans un thread et impose un timeout de 60 s."""
+    """Exécute repondre() dans un thread et impose un timeout de RAG_TIMEOUT_SECONDES."""
     loop = asyncio.get_event_loop()
     return await asyncio.wait_for(
         loop.run_in_executor(
             _executor,
             lambda: repondre(question=question, historique=historique),
         ),
-        timeout=60.0,
+        timeout=RAG_TIMEOUT_SECONDES,
     )
+
+
+# Warm-up au démarrage pour éviter le cold start sur la première requête
+@app.on_event("startup")
+async def warmup():
+    """Pré-charge le pipeline RAG au démarrage."""
+    if not RAG_DISPONIBLE:
+        return
+    logger.info("Warm-up RAG en cours…")
+    try:
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(
+            _executor,
+            lambda: repondre(question="bonjour", historique=[]),
+        )
+        logger.info("Warm-up RAG terminé.")
+    except Exception as e:
+        logger.warning(f"Warm-up RAG échoué (non bloquant) : {e}")
 
 
 # Modèles Pydantic
@@ -187,7 +208,7 @@ class ChatRequest(BaseModel):
 
 class SourceInfo(BaseModel):
     fichier: str
-    # score normalisé en pourcentage 
+    # Score normalisé en pourcentage
     score: float
     service: Optional[str] = None
 
@@ -274,14 +295,14 @@ async def supprimer_session(session_id: str):
     return {"message": "Session introuvable (déjà expirée ?)"}
 
 
-# Endpoint POST pour fermeture propre via sendBeacon 
+# Endpoint POST pour fermeture propre via sendBeacon
 @app.post(
     "/session/{session_id}/fermer",
     tags=["Sessions"],
     dependencies=[Depends(verifier_api_key)],
 )
 async def fermer_session(session_id: str):
-    """Ferme proprement une session"""
+    """Ferme proprement une session (compatible sendBeacon)."""
     if not _UUID_PATTERN.match(session_id):
         raise HTTPException(status_code=400, detail="session_id invalide.")
     sessions.pop(session_id, None)
@@ -321,10 +342,12 @@ async def chat(request: Request, data: ChatRequest):
     try:
         résultat = await appeler_rag(data.message, session["historique"])
     except asyncio.TimeoutError:
-        logger.error(f"Timeout RAG [{data.session_id[:8]}] après 60 s")
+        logger.error(
+            f"Timeout RAG [{data.session_id[:8]}] après {RAG_TIMEOUT_SECONDES} s"
+        )
         raise HTTPException(
-            status_code=504,
-            detail="Le pipeline RAG a mis trop de temps à répondre. Veuillez réessayer.",
+            status_code=503,
+            detail="Le serveur démarre, veuillez réessayer dans 30 secondes.",
         )
     except Exception as e:
         # Log détaillé côté serveur, message générique côté client
@@ -353,17 +376,16 @@ async def chat(request: Request, data: ChatRequest):
         session["historique"] = brut
 
     # Normalisation du score RAG en pourcentage lisible par le frontend
-    sources = []
-    for src in sources_brutes:
-        raw_score = src.get("score", 0)
-        score_normalise = round(raw_score * 100, 1) if raw_score <= 1.0 else round(raw_score, 1)
-        sources.append(
-            SourceInfo(
-                fichier=os.path.basename(src.get("fichier", "Inconnu")),
-                score=score_normalise,
-                service=src.get("service"),
-            )
+    sources = [
+        SourceInfo(
+            fichier=os.path.basename(src.get("fichier", "Inconnu")),
+            score=round(src.get("score", 0) * 100, 1)
+            if src.get("score", 0) <= 1.0
+            else round(src.get("score", 0), 1),
+            service=src.get("service"),
         )
+        for src in sources_brutes
+    ]
 
     logger.info(
         f"[{data.session_id[:8]}] Réponse générée — "
