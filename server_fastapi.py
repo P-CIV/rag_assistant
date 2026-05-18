@@ -68,7 +68,7 @@ _raw_origins = os.getenv("ALLOWED_ORIGINS", "")
 ALLOWED_ORIGINS: list[str] = (
     [o.strip() for o in _raw_origins.split(",") if o.strip()]
     if _raw_origins
-    else ["http://localhost:5500", "http://127.0.0.1:5500"]
+    else ["http://localhost:5500", "http://127.0.0.1:5500", "https://kovaassistant.netlify.app"]
 )
 
 # Authentification par clé API (optionnelle)
