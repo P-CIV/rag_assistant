@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 
 # Configuration Azure OpenAI Chat
@@ -20,7 +19,7 @@ AZURE_EMBEDDING_API_VERSION = os.getenv("AZURE_EMBEDDING_API_VERSION", "2024-02-
 # Chemins du projet
 DOSSIER_DONNEES_BRUTES = "data/raw"
 DOSSIER_DONNEES_TRAITEES = "data/processed"
-DOSSIER_BASE_VECTEURS = "vector_db"
+DOSSIER_BASE_VECTEURS = os.getenv("VECTOR_DB_PATH", "vector_db")
 FICHIER_PROMPT = "prompts/rag_prompt.txt"
 
 # Paramètres de découpage des documents
