@@ -1,111 +1,132 @@
 # Assistant RAG de Recommandation de Services
 
-Un assistant qui trouve et recommande des services à partir de vos catalogues, en comprenant les questions en langage naturel.
+Un assistant qui cherche et recommande des services dans vos catalogues en comprenant vos questions.
 
 ## Démarrage rapide
 
 ```bash
-# 1. Installer les dépendances
+# Installer les dépendances
 pip install -r requirements.txt
 
-# 2. Configurer les clés API dans .env
+# Configurer les clés API
+# Créer/éditer le fichier .env 
 
-# 3. Déposer les catalogues
-# Ajouter vos fichiers pdf dans data/raw/
+# Ajouter vos catalogues
+# Placer les fichiers PDF dans data/raw/
 
-# 4. Lancer l'assistant
+# Lancer l'assistant
 python app.py
 ```
 
 ## Configuration
 
-Créez ou mettez à jour le fichier `.env` avec vos clés Azure OpenAI :
+Créez un fichier `.env` avec vos clés API :
 
 ```env
-OPENAI_API_KEY=votre_cle_chat
+OPENAI_API_KEY=votre_cle
 OPENAI_API_ENDPOINT=https://votre-ressource.openai.azure.com/
 OPENAI_EMBEDDING_API_KEY=votre_cle_embedding
 OPENAI_EMBEDDING_API_ENDPOINT=https://votre-ressource-embedding.openai.azure.com/
 AZURE_CHAT_DEPLOYMENT=gpt-4.1-mini
-AZURE_EMBEDDING_DEPLOYMENT=text-embedding-......
+AZURE_EMBEDDING_DEPLOYMENT=text-embedding-...
 ```
 
 ## Structure du projet
 
 ```
 RAG_ASSISTANT/
-├── src/                      # Cœur du système
-│   ├── config.py            # Configuration centralisée
-│   ├── ingestion.py         # Import des catalogues
-│   ├── retrieval.py         # Recherche dans la base
-│   ├── generation.py        # Génération des réponses
-│   └── utils.py             # Fonctions partagées
+├── src/                      # Code principal
+│   ├── config.py            # Configuration Azure OpenAI
+│   ├── ingestion.py         # Charge PDFs, découpe chunks, vectorise
+│   ├── retrieval.py         # Recherche vectorielle (Chroma)
+│   ├── generation.py        # Génération LLM (2 passes)
+│   └── utils.py             # Utilitaires (embeddings)
 │
 ├── data/
-│   ├── raw/                 # Déposer les catalogues ici
-│   └── processed/           # Catalogues indexés
+│   ├── raw/                 # Vos catalogues (PDF)
+│   └── processed/           # Textes extraits + chunks
 │
-├── vector_db/               # Base ChromaDB (auto-générée)
-├── prompts/                 # Instruction de l'assistant
-├── ui/                      # Interface Streamlit
-├── tests/                   # Tests et utilitaires
-├── app.py                   # Point d'entrée principal
-└── config.yaml              # Configuration générale
+├── scenarios/               # Cas de test
+│   └── test_cases.csv       # scénarios des questions de recommandation 
+│
+├── vector_db/               # ChromaDB (auto-créée)
+├── config.yaml              # Paramètres (chunk size, temperature, etc...)
+├── prompts/                 # Instructions pour le LLM
+│   └── rag_prompt.txt       # Prompt système
+├── app.py                   # CLI interactive
+├── server_fastapi.py        # API REST
+├── requirements.txt         # Dépendances
+└── README.md               # Ce fichier
 ```
 
 ## Utilisation
 
-**Première utilisation :** La base vectorielle se crée automatiquement au premier lancement.
+**Premier lancement :**
 
 ```bash
 python app.py
 ```
 
-**Après ajout de catalogues :** Réindexer la base :
+La base vectorielle se crée automatiquement.
+
+**Après ajout de catalogues :**
 
 ```bash
-python tests/reindexer.py
+python reindexer.py
 ```
 
-##  Tests
+Recrée la base depuis les nouveaux PDFs.
 
-Lancer les cas de test :
+**Lancer les tests :**
 
 ```bash
-python tests/test_scenarios.py
+python evaluator.py
 ```
 
-Voir [scenarios/test_cases.csv](scenarios/test_cases.csv) pour les tests disponibles.
+Évalue les scénarios et génère un rapport JSON.
 
 ## Comment ça marche
 
-1. **Ingestion** → Les catalogues sont chargés et découpés en chunks
-2. **Vectorisation** → Chaque chunk devient un vecteur (embedding)
-3. **Stockage** → Les vecteurs sont indexés dans ChromaDB
-4. **Recherche** → Une question pose cherche les documents similaires
-5. **Génération** → GPT génère une recommandation basée sur les documents trouvés
-6. **Mémoire** → L'assistant se souvient des 10 derniers échanges
+L'assistant suit ces étapes pour répondre à vos questions :
 
-## Comportement de l'assistant
+1. **Ingestion** Les catalogues PDF sont chargés et découpés
+2. **Vectorisation** Chaque morceau devient un vecteur (embedding)
+3. **Indexation** Les vecteurs sont stockés dans ChromaDB
+4. **Recherche** Votre question trouve les documents pertinents
+5. **Génération structurée** Appel Azure OpenAI GPT-4.1-mini (temperature 0.3) en deux passes : détection d'intention puis génération enrichie avec contexte et parsing structuré
+6. **Mémoire** L'assistant se souvient des 10 derniers échanges
 
-- Recommande **1 à 2 services** par réponse
-- Retient l'**historique** de la conversation (10 échanges)
-- Refuse poliment les questions **hors catalogue**
-- Reformule les questions **ambiguës** en tenant compte du contexte
+## Caractéristiques
+
+- Recommande 1 à 2 services par réponse
+- Mémorise l'historique (10 échanges)
+- Refuse les questions hors catalogue
+- Reformule les questions ambiguës avec le contexte
+- Génération à 2 passes avec parsing de réponse
+
+## Tests
+
+scénarios couvrant :
+
+- **Recommandations** : Questions sur les services (matériel, serveurs, RGPD, maintenance)
+- **Refus polies** : Questions hors catalogue
+- **Suivi historique** : Questions avec contexte
+
+Résultats stockés dans : `evaluator.json`
 
 ## Dépannage
 
 **Les recommandations ne sont pas bonnes ?**
 
 - Vérifier que les catalogues sont dans `data/raw/`
-- Relancer `python tests/reindexer.py`
+- Relancer `python reindexer.py`
 
 **Erreur de clés API ?**
 
 - Vérifier le fichier `.env`
-- Les clés doivent correspondre à une ressource Azure OpenAI valide
+- Les clés doivent être valides pour Azure OpenAI
 
-**La base vectorielle ne se met pas à jour ?**
+**La base n'est pas à jour ?**
 
 - Supprimer le dossier `vector_db/`
 - Relancer l'application
