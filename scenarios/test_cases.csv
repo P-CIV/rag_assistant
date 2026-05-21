@@ -1,8 +1,31 @@
 question,reponse_attendue_type,hors_catalogue
-"Je cherche une connexion internet pour regarder des films en 4K",recommandation,non
-"Quel forfait pour une petite entreprise ?",recommandation,non
-"J'ai un petit budget, quel forfait mobile ?",recommandation,non
-"Quelle est la capitale de la France ?",refus_poli,oui
-"Parle-moi de la météo aujourd'hui",refus_poli,oui
-"Je veux internet et du mobile, qu'est-ce que vous proposez ?",recommandation,non
-"Le dernier forfait que tu m'as suggéré, c'est combien ?",suivi_historique,non
+"Quel est le prix d'un ordinateur fixe avec écran 24 pouces ?",recommandation,non
+"Quelle est la différence de prix entre un ordinateur portable 13.6" et 15.6" ?",recommandation,non
+"Quelles options puis-je ajouter à mon poste de travail ?",recommandation,non
+"Proposez-vous des tablettes ? Quelles sont les options ?",recommandation,non
+"Quelle suite bureautique est proposée et à quel prix ?",recommandation,non
+"Quel est le tarif d'un serveur pour un petit groupe de travail (moins de 15 agents) ?",recommandation,non
+"Comment sont facturés les serveurs virtuels hébergés au CDG77 ?",recommandation,non
+"Quel est le coût annuel pour sauvegarder un serveur de 200 Go ?",recommandation,non
+"Comment le CDG77 accompagne-t-il les collectivités sur le RGPD ?",recommandation,non
+"Qu'est-ce qu'une AIPD et quand est-elle déclenchée ?",recommandation,non
+"À quoi sert une charte informatique pour une collectivité ?",recommandation,non
+"Quels services propose la DSI de l'Université de Limoges pour les chercheurs ?",recommandation,non
+"Comment un étudiant peut-il obtenir son identité numérique à l'université ?",recommandation,non
+"Qu'est-ce que le service d'assistance à distance de la DSI universitaire ?",recommandation,non
+"Quelles marques de pièces d'origine propose Haladjian ?",recommandation,non
+"Qu'est-ce que le programme Partinium de Haladjian ?",recommandation,non
+"Quels engins sont compatibles avec la valise de diagnostic multimarques ?",recommandation,non
+"Quelles fonctions offre la valise de diagnostic ?",recommandation,non
+"Quels types de contrats d'entretien Haladjian propose-t-il ?",recommandation,non
+"Quelle garantie est offerte sur les pièces dans le cadre d'un contrat Haladjian ?",recommandation,non
+"Quelle garantie est offerte sur les chaînes et composants Berco ?",recommandation,non
+"Quelles batteries de démarrage sont disponibles pour Caterpillar ?",recommandation,non
+"Quels systèmes de caméra pour engins propose Haladjian ?",recommandation,non
+"Quel siège de cabine recommandez-vous pour un chargeur sur terrain accidenté ?",recommandation,non
+"Qu'est-ce que le centre de reconditionnement Haladjian ?",recommandation,non
+"Quelle alarme de recul choisir pour un dumper lourd ?",recommandation,non
+"Je suis une collectivité avec 10 agents. Quel pack informatique me recommandez-vous ?",recommandation,non
+"Quelle est la démarche complète pour mettre en conformité RGPD une petite commune ?",recommandation,non
+"Comment optimiser les coûts de maintenance d'une pelle hydraulique sur toute sa durée de vie ?",recommandation,non
+
