@@ -29,8 +29,10 @@ def executer_tests(fichier_scenarios: str = "scenarios/test_cases.csv"):
         question = cas["question"]
         hors_catalogue = cas.get("hors_catalogue", "non").strip().lower() == "oui"
         print(f"Test {i} : {question}")
-        print(f"  Type attendu : {cas.get('reponse_attendue_type', '?')}"
-              f"{'  [hors catalogue]' if hors_catalogue else ''}")
+        print(
+            f"  Type attendu : {cas.get('reponse_attendue_type', '?')}"
+            f"{'  [hors catalogue]' if hors_catalogue else ''}"
+        )
 
         resultat = repondre(question, historique=historique)
         reponse = resultat["reponse"]
