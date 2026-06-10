@@ -1,0 +1,244 @@
+{
+  "timestamp": "2026-06-10T14:55:43.028810",
+  "accuracy_pct": 0.0,
+  "performance_par_type": {
+    "recommandation": {
+      "total": 29,
+      "correct": 0
+    }
+  },
+  "resultats": [
+    {
+      "id": 1,
+      "question": "Quel est le prix d'un ordinateur fixe avec écran 24 pouces ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 19.408
+    },
+    {
+      "id": 2,
+      "question": "Quelle est la différence de prix entre un ordinateur portable 13.6 et 15.6\" ?\"",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.491
+    },
+    {
+      "id": 3,
+      "question": "Quelles options puis-je ajouter à mon poste de travail ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 3.879
+    },
+    {
+      "id": 4,
+      "question": "Proposez-vous des tablettes ? Quelles sont les options ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.717
+    },
+    {
+      "id": 5,
+      "question": "Quelle suite bureautique est proposée et à quel prix ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.887
+    },
+    {
+      "id": 6,
+      "question": "Quel est le tarif d'un serveur pour un petit groupe de travail (moins de 15 agents) ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 3.531
+    },
+    {
+      "id": 7,
+      "question": "Comment sont facturés les serveurs virtuels hébergés au CDG77 ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.572
+    },
+    {
+      "id": 8,
+      "question": "Quel est le coût annuel pour sauvegarder un serveur de 200 Go ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 4.693
+    },
+    {
+      "id": 9,
+      "question": "Comment le CDG77 accompagne-t-il les collectivités sur le RGPD ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.654
+    },
+    {
+      "id": 10,
+      "question": "Qu'est-ce qu'une AIPD et quand est-elle déclenchée ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.405
+    },
+    {
+      "id": 11,
+      "question": "À quoi sert une charte informatique pour une collectivité ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.76
+    },
+    {
+      "id": 12,
+      "question": "Quels services propose la DSI de l'Université de Limoges pour les chercheurs ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.379
+    },
+    {
+      "id": 13,
+      "question": "Comment un étudiant peut-il obtenir son identité numérique à l'université ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.602
+    },
+    {
+      "id": 14,
+      "question": "Qu'est-ce que le service d'assistance à distance de la DSI universitaire ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.852
+    },
+    {
+      "id": 15,
+      "question": "Quelles marques de pièces d'origine propose Haladjian ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.478
+    },
+    {
+      "id": 16,
+      "question": "Qu'est-ce que le programme Partinium de Haladjian ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.348
+    },
+    {
+      "id": 17,
+      "question": "Quels engins sont compatibles avec la valise de diagnostic multimarques ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.319
+    },
+    {
+      "id": 18,
+      "question": "Quelles fonctions offre la valise de diagnostic ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.968
+    },
+    {
+      "id": 19,
+      "question": "Quels types de contrats d'entretien Haladjian propose-t-il ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 5.099
+    },
+    {
+      "id": 20,
+      "question": "Quelle garantie est offerte sur les pièces dans le cadre d'un contrat Haladjian ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.083
+    },
+    {
+      "id": 21,
+      "question": "Quelle garantie est offerte sur les chaînes et composants Berco ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.589
+    },
+    {
+      "id": 22,
+      "question": "Quelles batteries de démarrage sont disponibles pour Caterpillar ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.606
+    },
+    {
+      "id": 23,
+      "question": "Quels systèmes de caméra pour engins propose Haladjian ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.932
+    },
+    {
+      "id": 24,
+      "question": "Quel siège de cabine recommandez-vous pour un chargeur sur terrain accidenté ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.079
+    },
+    {
+      "id": 25,
+      "question": "Qu'est-ce que le centre de reconditionnement Haladjian ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.169
+    },
+    {
+      "id": 26,
+      "question": "Quelle alarme de recul choisir pour un dumper lourd ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 4.133
+    },
+    {
+      "id": 27,
+      "question": "Je suis une collectivité avec 10 agents. Quel pack informatique me recommandez-vous ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 4.208
+    },
+    {
+      "id": 28,
+      "question": "Quelle est la démarche complète pour mettre en conformité RGPD une petite commune ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 1.804
+    },
+    {
+      "id": 29,
+      "question": "Comment optimiser les coûts de maintenance d'une pelle hydraulique sur toute sa durée de vie ?",
+      "type": "recommandation",
+      "correct": false,
+      "nb_sources": 0,
+      "temps_s": 2.329
+    }
+  ]
+}

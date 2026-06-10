@@ -21,7 +21,7 @@ def lancer_assistant():
         else:
             base = executer_ingestion()
     except Exception as e:
-        print(f"❌ Erreur lors du chargement : {e}")
+        print(f"Erreur lors du chargement : {e}")
         return
 
     historique = []
@@ -48,7 +48,7 @@ def lancer_assistant():
 
         # Afficher les sources si disponibles
         if sources:
-            print("\n📚 Sources utilisées :")
+            print("\nSources utilisées :")
             for i, source in enumerate(sources, 1):
                 fichier = os.path.basename(source.get("fichier", "Inconnu"))
                 score = source.get("score", 0)

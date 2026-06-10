@@ -84,7 +84,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         masquerStatut();
     }
 
-    // Helpers UI 
+    // Helpers UI
+
     function heureActuelle() {
         const d = new Date();
         return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
@@ -116,7 +117,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             .replace(/\*([^*]+)\*/g,   "<em>$1</em>");
     }
 
-    // Supprime l'extension .pdf 
+    // Supprime l'extension .pdf
     function supprimerExtension(fichier) {
         return fichier.replace(/\.pdf$/i, "");
     }
@@ -204,40 +205,46 @@ document.addEventListener("DOMContentLoaded", async () => {
         scrollerBas();
     }
 
-    // Extrait les noms de fichiers PDF cités dans le texte
+    // Normalise un nom de fichier pour la comparaison : sans extension, sans "page X", en minuscules
+    function normaliserNom(fichier) {
+        return fichier
+            .replace(/,?\s*pages?\s*[\d,\set]+/gi, "")
+            .replace(/\.pdf$/i, "")
+            .trim()
+            .toLowerCase();
+    }
+
+    // Extrait les noms de fichiers PDF cités dans le texte (avec ou sans astérisques autour)
     function extraireFichiersCites(texte) {
         const cites = new Set();
-        texte.split("\n").forEach(ligne => {
-            const m = ligne.trim().match(/^\*\((?:Source\s*:?\s*)?(.+)\)\*$/i);
-            if (!m) return;
-            const re = /([^,\s*]+\.(?:pdf|PDF))/gi;
-            let hit;
-            while ((hit = re.exec(m[1])) !== null) {
-                cites.add(hit[1].replace(/\.pdf$/i, "").toLowerCase());
-            }
-        });
+        const re = /([^,\s*(]+\.(?:pdf|PDF))/gi;
+        let hit;
+        while ((hit = re.exec(texte)) !== null) {
+            cites.add(normaliserNom(hit[1]));
+        }
         return cites;
     }
 
     // Ne montrer dans le panneau sources que les fichiers réellement cités.
+    // Si aucune citation n'est détectée mais que des sources existent, on les affiche toutes
+    // (cas où le LLM mentionne les sources sans format PDF explicite dans le corps du texte).
     function afficherMessageBot(texte, sources = []) {
         const cites = extraireFichiersCites(texte);
 
-        const sourcesFiltrees = cites.size === 0
-            ? sources
-            : sources.filter(({ fichier }) => {
-                const nom = fichier
-                    .replace(/,?\s*page\s*\d+/gi, "")
-                    .replace(/\.pdf$/i, "")
-                    .trim()
-                    .toLowerCase();
-                return cites.has(nom);
-            });
+        if (cites.size === 0) {
+            ajouterMessage(texte, false, sources);
+            return;
+        }
 
-        ajouterMessage(texte, false, sourcesFiltrees);
+        const sourcesFiltrees = sources.filter(({ fichier }) =>
+            cites.has(normaliserNom(fichier))
+        );
+
+        // Si le filtre est trop strict et exclut tout, on affiche toutes les sources
+        ajouterMessage(texte, false, sourcesFiltrees.length > 0 ? sourcesFiltrees : sources);
     }
 
-    //  Typing indicator 
+    // Typing indicator
 
     let timerColdStart = null;
 
@@ -256,7 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("typing-indicator")?.remove();
     }
 
-    //  Bloc sources 
+    // Bloc sources
 
     function creerBlocSources(sources) {
         // Dédupliquer par nom (sans "page X", avec extension .pdf conservée pour l'affichage)
@@ -283,7 +290,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const classBadge = score >= 70 ? "score-vert" : score >= 40 ? "score-jaune" : "score-rouge";
             const label      = score >= 70 ? "Très pertinent" : score >= 40 ? "Pertinent" : "Peu pertinent";
             const li         = document.createElement("li");
-            // FIX 3 — Afficher le nom sans extension .pdf dans le panneau sources
             const nomAffiche = supprimerExtension(fichier);
             li.innerHTML     = `
                 <i class="fas fa-file-pdf source-icone"></i>
@@ -302,7 +308,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         return bloc;
     }
 
-    //  API
+    // API
+
     async function appellerAPI(messageUtilisateur) {
         const res = await fetch(`${API_URL}/chat`, {
             method:  "POST",
@@ -324,7 +331,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.setItem(CLE_HISTORIQUE, JSON.stringify(historique));
     }
 
-    //  Envoi message 
+    // Envoi message
 
     async function envoyerMessage() {
         const texte = champSaisie.value.trim();
