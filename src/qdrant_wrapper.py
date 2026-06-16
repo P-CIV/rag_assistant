@@ -1,5 +1,4 @@
 import logging
-from typing import List, Tuple, Any
 from qdrant_client import QdrantClient
 from langchain_core.documents import Document
 from src.utils import creer_modele_embedding
@@ -115,12 +114,13 @@ class QdrantRetrieverWrapper:
             return []
 
         try:
-            hits = self.client.search(
+            result = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
+                query=query_embedding,
                 limit=k,
                 with_payload=True,
             )
+            hits = result.points
         except Exception as e:
             logger.error(f"Erreur recherche Qdrant : {e}")
             return []
