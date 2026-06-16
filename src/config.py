@@ -16,6 +16,11 @@ AZURE_EMBEDDING_DEPLOYMENT = os.getenv(
 )
 AZURE_EMBEDDING_API_VERSION = os.getenv("AZURE_EMBEDDING_API_VERSION", "2023-05-15")
 
+# Configuration Qdrant Cloud
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "ma_collection")
+
 # Chemins du projet
 DOSSIER_DONNEES_BRUTES = "data/raw"
 DOSSIER_DONNEES_TRAITEES = "data/processed"
