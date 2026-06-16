@@ -1,14 +1,16 @@
 import re
-from langchain_chroma import Chroma
-from src.config import NOMBRE_DOCS_RECUPERES
+import os
+import logging
+from src.qdrant_wrapper import QdrantRetrieverWrapper
+from src.config import NOMBRE_DOCS_RECUPERES, QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION
 
-# M1 — Seuil de distance cosinus maximum (0 = identique, 2 = opposé)
-# 0.7 correspond à ~65% de confiance minimum
+logger = logging.getLogger(__name__)
+
+# Seuil de distance cosinus maximum 
 SEUIL_DISTANCE_MAX = 0.7
 
 
-def creer_retriever(base: Chroma):
-    # Crée un retriever pour la recherche vectorielle
+def creer_retriever(base: QdrantRetrieverWrapper):
     return base.as_retriever(
         search_type="similarity_score_threshold",
         search_kwargs={"k": NOMBRE_DOCS_RECUPERES, "score_threshold": 0.3},
@@ -26,11 +28,24 @@ def extraire_signal_recherche(reponse_brute: str) -> tuple:
     return None, reponse_brute
 
 
-def recuperer_documents(query: str, base: Chroma) -> list:
-    """Effectue une recherche vectorielle et filtre les résultats peu pertinents"""
+def recuperer_documents(query: str, base: QdrantRetrieverWrapper) -> list:
+    """Effectue une recherche vectorielle Qdrant et filtre les résultats peu pertinents"""
     resultats = base.similarity_search_with_score(query, k=NOMBRE_DOCS_RECUPERES)
-    # M1 — Appliquer le seuil : ne garder que les documents suffisamment proches
     resultats_filtres = [
         (doc, score) for doc, score in resultats if score <= SEUIL_DISTANCE_MAX
     ]
     return resultats_filtres if resultats_filtres else resultats[:1]
+
+
+def charger_base_qdrant() -> QdrantRetrieverWrapper:
+    """Charge et retourne le wrapper Qdrant connecté à la collection cloud."""
+    if not QDRANT_URL or not QDRANT_API_KEY:
+        raise EnvironmentError(
+            "QDRANT_URL et QDRANT_API_KEY sont requis. Vérifie ton .env"
+        )
+    logger.info(f"Connexion à Qdrant Cloud — collection '{QDRANT_COLLECTION}'")
+    return QdrantRetrieverWrapper(
+        url=QDRANT_URL,
+        api_key=QDRANT_API_KEY,
+        collection_name=QDRANT_COLLECTION,
+    )
