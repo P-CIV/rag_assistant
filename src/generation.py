@@ -1,16 +1,19 @@
 import os
-import sys
+import re
+import logging
 import dotenv
 dotenv.load_dotenv()
-import re
-from langchain_core.messages import SystemMessage, HumanMessage
-from src.config import FICHIER_PROMPT, MAX_RECOMMANDATIONS, DOSSIER_BASE_VECTEURS
-from src.utils import creer_modele_chat, lire_prompt, formater_documents
-from src.retrieval import extraire_signal_recherche, recuperer_documents
-from src.ingestion import executer_ingestion, charger_base_existante
 
-# F1 — Cache du prompt système (lecture disque unique au lieu de 2 I/O par échange)
+from langchain_core.messages import SystemMessage, HumanMessage
+from src.config import FICHIER_PROMPT, MAX_RECOMMANDATIONS
+from src.utils import creer_modele_chat, lire_prompt, formater_documents
+from src.retrieval import extraire_signal_recherche, recuperer_documents, charger_base_qdrant
+
+logger = logging.getLogger(__name__)
+
+# Cache singleton du prompt et de la base Qdrant
 _prompt_cache = None
+_base_cache = None
 
 
 def _get_prompt() -> str:
@@ -22,6 +25,14 @@ def _get_prompt() -> str:
         except FileNotFoundError:
             _prompt_cache = _prompt_par_defaut()
     return _prompt_cache
+
+
+def _get_base():
+    """Retourne la connexion Qdrant mise en cache (connexion unique au démarrage)."""
+    global _base_cache
+    if _base_cache is None:
+        _base_cache = charger_base_qdrant()
+    return _base_cache
 
 
 def construire_messages(
@@ -50,7 +61,8 @@ def deuxieme_passe(question: str, documents: list, historique: list) -> str:
 
     contexte = formater_documents(documents)
     contenu_utilisateur = (
-        f"Question du client : {question}\n\n" f"Extraits du catalogue :\n{contexte}"
+        f"Question du client : {question}\n\n"
+        f"Extraits du catalogue :\n{contexte}"
     )
 
     messages = construire_messages(prompt_systeme, historique, contenu_utilisateur)
@@ -84,19 +96,16 @@ def _prompt_par_defaut() -> str:
 
 
 def repondre(question: str, historique: list = None) -> dict:
-    """Orchestre la pipeline RAG: charge la base, décide si recherche nécessaire, retourne réponse + sources"""
+    """Orchestre la pipeline RAG: charge la base Qdrant, décide si recherche nécessaire, retourne réponse + sources"""
     if historique is None:
         historique = []
 
     try:
-        if os.path.exists(DOSSIER_BASE_VECTEURS) and os.listdir(DOSSIER_BASE_VECTEURS):
-            base = charger_base_existante(DOSSIER_BASE_VECTEURS)
-        else:
-            print(" Création de la base vectorielle (première utilisation)...")
-            base = executer_ingestion()
+        base = _get_base()
     except Exception as e:
+        logger.error(f"Erreur chargement base Qdrant : {e}")
         return {
-            "reponse": f" Erreur lors du chargement de la base vectorielle: {e}",
+            "reponse": f"Erreur lors du chargement de la base vectorielle: {e}",
             "nb_sources": 0,
             "sources": [],
         }
@@ -107,27 +116,19 @@ def repondre(question: str, historique: list = None) -> dict:
 
     if query_recherche:
         try:
-            # Récupérer les documents pertinents avec scores
             resultats = recuperer_documents(query_recherche, base)
-
-            # Séparer les documents et les scores
             documents = [doc for doc, score in resultats]
-
-            # Deuxième passe avec contexte (documents seulement, pas les scores)
             reponse_finale = deuxieme_passe(question, documents, historique)
 
-            # Extraire les métadonnées des sources avec les scores
             sources = []
             for doc, score in resultats:
                 try:
-                    # ChromaDB avec hnsw:space=cosine retourne une distance cosinus
-                    # (0 = identique, 2 = opposé). Formule de conversion correcte :
-                    # confiance = (1 - distance/2) * 100
+                    # score ici est une distance cosinus (0=identique, 1=opposé)
                     if isinstance(score, (int, float)):
-                        score_confiance = round((1 - score / 2) * 100, 1)
+                        score_confiance = round((1 - score) * 100, 1)
                     else:
                         score_confiance = 0
-                except Exception as e:
+                except Exception:
                     score_confiance = 0
 
                 score_confiance = max(0, min(100, score_confiance))
@@ -139,14 +140,14 @@ def repondre(question: str, historique: list = None) -> dict:
                 }
                 sources.append(source_info)
 
-            # M2 — Seuil de confiance minimum : si la moyenne < 70%, ignorer les sources
+            # Seuil de confiance minimum : si la moyenne < 70%, ignorer les sources
             if sources:
                 confiance_moyenne = sum(s["score"] for s in sources) / len(sources)
                 if confiance_moyenne < 70:
                     sources = []
 
         except Exception as e:
-            reponse_finale = f"{reponse_finale}\n\n⚠️ Erreur lors de la recherche: {e}"
+            reponse_finale = f"{reponse_finale}\n\nErreur lors de la recherche: {e}"
 
     reponse_finale = re.sub(
         r"\[RECHERCHE:[^\]]*\]", "", reponse_finale, flags=re.IGNORECASE
