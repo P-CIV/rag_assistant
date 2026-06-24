@@ -5,6 +5,11 @@ Un assistant qui cherche et recommande des services dans vos catalogues en compr
 ## Démarrage rapide
 
 ```bash
+# Créer un environement virtuel
+python -m venv venv
+
+# Activer l'environnement
+
 # Installer les dépendances
 pip install -r requirements.txt
 
